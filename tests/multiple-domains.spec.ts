@@ -48,8 +48,7 @@ test('multiple domain total matches the sum of exactly three available results',
     expect(cartTotal.minorUnits).toBe(expectedTotalInMinorUnits);
   } finally {
     await cartPage
-      .open()
-      .then(() => cartPage.clear())
+      .clearForCleanup()
       .catch((error) => console.warn('Cart cleanup failed after multiple-domain test.', error));
   }
 });

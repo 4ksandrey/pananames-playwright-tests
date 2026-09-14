@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 export const contactSwitchLabels = {
   support:
@@ -70,6 +70,7 @@ export class ContactsPage {
     const row = this.contactRow(name);
     await row.getByRole('button').first().click();
     await this.page.getByRole('heading', { name: 'Edit contact' }).waitFor();
+    await expect(this.nameInput).toHaveValue(name);
   }
 
   async editContact(data: ContactData): Promise<void> {

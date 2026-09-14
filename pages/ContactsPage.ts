@@ -46,8 +46,16 @@ export class ContactsPage {
   }
 
   async open(): Promise<void> {
+    const contactsResponse = this.page.waitForResponse(
+      (response) =>
+        response.request().method() === 'GET' &&
+        new URL(response.url()).pathname === '/api/contacts',
+    );
+
     await this.page.goto('/contacts');
     await this.heading.waitFor();
+    await contactsResponse;
+    await this.page.locator('.va-inner-loading[aria-busy="true"]').waitFor({ state: 'hidden' });
   }
 
   contactRow(name: string): Locator {

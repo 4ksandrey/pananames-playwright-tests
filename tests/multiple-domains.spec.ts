@@ -50,6 +50,6 @@ test('multiple domain total matches the sum of exactly three available results',
     await cartPage
       .open()
       .then(() => cartPage.clear())
-      .catch(() => undefined);
+      .catch((error) => console.warn('Cart cleanup failed after multiple-domain test.', error));
   }
 });

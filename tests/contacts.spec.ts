@@ -36,6 +36,14 @@ async function expectContactFormToMatch(
   }
 }
 
+async function cleanupContact(contactsPage: ContactsPage, name: string): Promise<void> {
+  try {
+    await contactsPage.deleteContactIfPresent(name);
+  } catch (error) {
+    console.warn(`Cleanup failed for contact "${name}".`, error);
+  }
+}
+
 test.describe('Contacts', () => {
   test('creates a new contact and persists its values', async ({ page }) => {
     const contactsPage = new ContactsPage(page);
@@ -52,7 +60,7 @@ test.describe('Contacts', () => {
       await contactsPage.openContact(contact.name);
       await expectContactFormToMatch(contactsPage, contact);
     } finally {
-      await contactsPage.deleteContactIfPresent(contact.name).catch(() => undefined);
+      await cleanupContact(contactsPage, contact.name);
     }
   });
 
@@ -80,7 +88,7 @@ test.describe('Contacts', () => {
       await contactsPage.openContact(editedContact.name);
       await expectContactFormToMatch(contactsPage, editedContact);
     } finally {
-      await contactsPage.deleteContactIfPresent(originalContact.name).catch(() => undefined);
+      await cleanupContact(contactsPage, originalContact.name);
     }
   });
 
@@ -97,7 +105,7 @@ test.describe('Contacts', () => {
       await contactsPage.deleteContact(contact.name);
       await expect(contactRow).toBeHidden();
     } finally {
-      await contactsPage.deleteContactIfPresent(contact.name).catch(() => undefined);
+      await cleanupContact(contactsPage, contact.name);
     }
   });
 });

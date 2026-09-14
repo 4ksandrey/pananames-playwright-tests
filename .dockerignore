@@ -1,0 +1,11 @@
+.git
+.github
+node_modules
+.env
+playwright/.auth
+playwright/.cache
+playwright-report
+test-results
+blob-report
+*.log
+.DS_Store

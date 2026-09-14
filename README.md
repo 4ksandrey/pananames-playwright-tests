@@ -74,6 +74,29 @@ npm run format:check
 npm run format
 ```
 
+## Docker
+
+The Docker image provides a consistent Node.js, Chromium, and system-library environment. It uses the Playwright image version that matches the version installed by `package-lock.json`.
+
+Create `.env` as described above, then build and run the suite with Docker Compose:
+
+```bash
+docker compose build
+docker compose run --rm tests
+```
+
+The Compose service loads credentials from the local `.env` file and writes Playwright reports and test results to the corresponding host directories. Neither the credentials nor the generated authentication state are copied into the image.
+
+To build and run without Compose:
+
+```bash
+docker build -t pananames-playwright-tests .
+docker run --rm --ipc=host --env-file .env \
+  -v "${PWD}/playwright-report:/app/playwright-report" \
+  -v "${PWD}/test-results:/app/test-results" \
+  pananames-playwright-tests
+```
+
 ## Project structure
 
 ```text

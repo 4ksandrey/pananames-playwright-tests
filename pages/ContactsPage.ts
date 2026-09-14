@@ -79,6 +79,10 @@ export class ContactsPage {
   }
 
   async deleteContact(name: string): Promise<void> {
+    if (['primary', 'abuse'].includes(name.trim().toLowerCase())) {
+      throw new Error(`Refusing to delete the protected ${name} contact.`);
+    }
+
     const row = this.contactRow(name);
     await row.getByRole('button').last().click();
 

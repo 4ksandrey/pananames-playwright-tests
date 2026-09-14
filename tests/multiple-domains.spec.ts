@@ -1,14 +1,11 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures/test';
 
-import { CartPage } from '../pages/CartPage';
-import { DomainRegistrationPage } from '../pages/DomainRegistrationPage';
 import { createDomainSld } from '../utils/testData';
 
 test('multiple domain total matches the sum of exactly three available results', async ({
-  page,
+  cartPage,
+  domainRegistrationPage: registrationPage,
 }) => {
-  const cartPage = new CartPage(page);
-  const registrationPage = new DomainRegistrationPage(page);
   const sld = createDomainSld();
 
   try {

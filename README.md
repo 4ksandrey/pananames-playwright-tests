@@ -14,13 +14,13 @@ Each contact test creates its own unique data and performs best-effort cleanup. 
 
 ## Requirements
 
-- Node.js 20 or later
-- npm
+- Node.js 20.19 or later
+- npm (included with Node.js)
 
 ## Installation
 
 ```bash
-npm install
+npm ci
 npx playwright install chromium
 ```
 
@@ -62,8 +62,16 @@ npm run test:domains
 # All scenarios in a visible browser
 npm run test:headed
 
-# Static TypeScript validation
+# Open Playwright Inspector for debugging
+npm run test:debug
+
+# Static validation
 npm run typecheck
+npm run lint
+npm run format:check
+
+# Apply project formatting
+npm run format
 ```
 
 ## Project structure
@@ -77,7 +85,14 @@ tests/multiple-domains.spec.ts
 utils/money.ts            USD display parsing into integer cents
 utils/testData.ts         Unique disposable contact and DNS-safe domain data
 playwright.config.ts      Authentication dependency and Chromium configuration
+.github/workflows/        Automatic static checks and manually triggered E2E
 ```
+
+## Continuous integration
+
+`quality.yml` runs `npm ci`, TypeScript, ESLint, and Prettier checks for pull requests and pushes to `main`. It does not access the dev application.
+
+`e2e-manual.yml` runs the Playwright suite only when started manually through **Actions → Manual E2E → Run workflow**. Before using it, configure the repository secrets `PANANAMES_EMAIL` and `PANANAMES_PASSWORD`.
 
 ## Design decisions
 
@@ -88,3 +103,4 @@ playwright.config.ts      Authentication dependency and Chromium configuration
 - Single-domain coverage is data-driven across three supported TLDs rather than duplicated.
 - Execution uses one worker because the supplied account is shared and cart state may be account-scoped. Tests remain logically independent despite sequential execution.
 - Chromium is the only configured browser because cross-browser coverage was not requested.
+- Screenshots and videos are retained on failure, while traces are captured on the first retry.

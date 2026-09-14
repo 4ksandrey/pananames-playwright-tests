@@ -17,6 +17,7 @@ export default defineConfig({
     baseURL: 'https://mcp.pananames-dev.com',
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
+    video: 'retain-on-failure',
   },
   projects: [
     {

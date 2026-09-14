@@ -2,10 +2,11 @@
 
 A focused Playwright and TypeScript test project for Pananames contact management and domain-cart workflows.
 
-## Coverage
+## Automated coverage
 
 - Create a contact and verify its persisted values.
-- Edit a disposable contact and verify changed fields and checkbox states.
+- Edit a disposable contact and verify changed fields.
+- Verify contact checkbox persistence.
 - Delete a disposable contact through the UI.
 - Verify a single-domain cart total for `.com`, `.net`, and `.org` using parameterized tests.
 - Search by SLD, add exactly three available domains, and verify the cart total equals their summed prices.
@@ -101,6 +102,7 @@ docker run --rm --ipc=host --env-file .env \
 
 ```text
 pages/                    Page objects for login, contacts, registration, and cart
+fixtures/test.ts          Typed fixtures for reusable page-object initialization
 tests/auth.setup.ts       One-time UI login and storage-state creation
 tests/contacts.spec.ts    Independent create, edit, and delete scenarios
 tests/single-domain.spec.ts
@@ -108,6 +110,8 @@ tests/multiple-domains.spec.ts
 utils/money.ts            USD display parsing into integer cents
 utils/testData.ts         Unique disposable contact and DNS-safe domain data
 playwright.config.ts      Authentication dependency and Chromium configuration
+Dockerfile                Reproducible Playwright execution image
+compose.yaml              Credentials and artifact mounts for Docker execution
 .github/workflows/        Automatic static checks and manually triggered E2E
 ```
 
@@ -119,11 +123,14 @@ playwright.config.ts      Authentication dependency and Chromium configuration
 
 ## Design decisions
 
+- Page Object Model classes contain locators and page actions; business assertions remain in tests.
+- Typed Playwright fixtures initialize only the page objects each scenario needs.
 - A setup project logs in once through the UI and saves reusable `storageState`.
-- Page objects contain locators and page actions; business assertions remain in tests.
 - Contact scenarios own their setup and cleanup, so they can run independently and in any order.
 - Displayed prices are converted to integer cents; promotional and multi-year displays use the effective selected-period amount.
 - Single-domain coverage is data-driven across three supported TLDs rather than duplicated.
 - Execution uses one worker because the supplied account is shared and cart state may be account-scoped. Tests remain logically independent despite sequential execution.
+- Docker provides a reproducible Node.js, Chromium, and system-library environment without replacing the local workflow.
+- CI runs static checks automatically; E2E execution against the shared dev environment remains manually triggered.
 - Chromium is the only configured browser because cross-browser coverage was not requested.
 - Screenshots and videos are retained on failure, while traces are captured on the first retry.

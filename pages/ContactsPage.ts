@@ -63,7 +63,7 @@ export class ContactsPage {
     await this.page.getByRole('heading', { name: 'Create new contact' }).waitFor();
     await this.fillContactForm(data);
     await this.page.getByRole('button', { name: 'Create', exact: true }).click();
-    await this.page.waitForURL(/\/contacts(?:[?#].*)?$/);
+    await this.heading.waitFor();
   }
 
   async openContact(name: string): Promise<void> {
@@ -75,7 +75,7 @@ export class ContactsPage {
   async editContact(data: ContactData): Promise<void> {
     await this.fillContactForm(data);
     await this.page.getByRole('button', { name: 'Save', exact: true }).click();
-    await this.page.waitForURL(/\/contacts(?:[?#].*)?$/);
+    await this.heading.waitFor();
   }
 
   async deleteContact(name: string): Promise<void> {

@@ -41,18 +41,14 @@ test.describe('Contacts', () => {
     const contactsPage = new ContactsPage(page);
     const contact = createContactData();
 
-    try {
-      await contactsPage.open();
-      await contactsPage.createContact(contact);
+    await contactsPage.open();
+    await contactsPage.createContact(contact);
 
-      const contactRow = contactsPage.contactRow(contact.name);
-      await expect(contactRow).toBeVisible();
-      await expect(contactRow).toContainText(contact.email);
+    const contactRow = contactsPage.contactRow(contact.name);
+    await expect(contactRow).toBeVisible();
+    await expect(contactRow).toContainText(contact.email);
 
-      await contactsPage.openContact(contact.name);
-      await expectContactFormToMatch(contactsPage, contact);
-    } finally {
-      await contactsPage.deleteContactIfPresent(contact.name).catch(() => undefined);
-    }
+    await contactsPage.openContact(contact.name);
+    await expectContactFormToMatch(contactsPage, contact);
   });
 });

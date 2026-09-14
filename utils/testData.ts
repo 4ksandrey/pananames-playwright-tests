@@ -24,3 +24,7 @@ export function createContactData(): ContactData {
     financialEmails: false,
   };
 }
+
+export function createDomainSld(): string {
+  return `qaauto${uniqueToken()}`;
+}

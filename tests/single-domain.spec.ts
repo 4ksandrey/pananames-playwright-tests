@@ -38,7 +38,7 @@ test.describe('Single domain cart total', () => {
         await cartPage
           .open()
           .then(() => cartPage.clear())
-          .catch(() => undefined);
+          .catch((error) => console.warn('Cart cleanup failed after single-domain test.', error));
       }
     });
   }

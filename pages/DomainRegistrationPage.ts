@@ -44,7 +44,7 @@ export class DomainRegistrationPage {
 
   async readDomainResult(card: Locator): Promise<DomainResult> {
     const domain = (await card.locator('.domain-name').innerText()).replaceAll(/\s/g, '').toLowerCase();
-    const priceText = await card.locator('span.text-right.text-gray-900').first().innerText();
+    const priceText = await card.locator('span.text-right.text-gray-900').last().innerText();
     const price = parseMoney(priceText);
 
     return {

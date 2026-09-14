@@ -116,7 +116,16 @@ export class ContactsPage {
   }
 
   private async selectPhonePrefix(prefix: string): Promise<void> {
-    await this.phonePrefixSelect.click();
+    const phonePrefixField = this.page.locator('div.relative').filter({
+      has: this.page.getByText('Phone prefix*', { exact: true }),
+    });
+    const selectedPrefix = await phonePrefixField.locator('.country-intl-label-text').innerText();
+
+    if (selectedPrefix.includes(`+${prefix}`)) {
+      return;
+    }
+
+    await phonePrefixField.locator('.country-intl-input-wrap').click();
     await this.page
       .locator('.vue-country-item[data-iso="ua"]')
       .filter({ hasText: `+${prefix}` })

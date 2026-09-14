@@ -8,8 +8,10 @@ export class LoginPage {
   }
 
   async login(email: string, password: string): Promise<void> {
-    await this.page.getByLabel('Email').fill(email);
-    await this.page.getByLabel('Password').fill(password);
-    await this.page.getByRole('button', { name: 'Login', exact: true }).click();
+    const loginForm = this.page.locator('form');
+
+    await loginForm.getByLabel('Email').fill(email);
+    await loginForm.getByLabel('Password').fill(password);
+    await loginForm.getByRole('button', { name: 'Login', exact: true }).click();
   }
 }

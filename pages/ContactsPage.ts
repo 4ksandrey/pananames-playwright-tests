@@ -76,6 +76,7 @@ export class ContactsPage {
 
   async openContact(name: string): Promise<void> {
     const row = this.contactRow(name);
+    // The application exposes unnamed icon-only row actions; Edit is the first action column.
     await row.getByRole('button').first().click();
     await this.page.getByRole('heading', { name: 'Edit contact' }).waitFor();
     await expect(this.nameInput).toHaveValue(name);
@@ -93,6 +94,7 @@ export class ContactsPage {
     }
 
     const row = this.contactRow(name);
+    // The application exposes unnamed icon-only row actions; Delete is the last action column.
     await row.getByRole('button').last().click();
 
     const dialog = this.page.getByRole('dialog');

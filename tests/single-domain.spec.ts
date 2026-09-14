@@ -1,16 +1,15 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures/test';
 
-import { CartPage } from '../pages/CartPage';
-import { DomainRegistrationPage } from '../pages/DomainRegistrationPage';
 import { createDomainSld } from '../utils/testData';
 
 const supportedTlds = ['com', 'net', 'org'] as const;
 
 test.describe('Single domain cart total', () => {
   for (const tld of supportedTlds) {
-    test(`single domain total matches search price for .${tld}`, async ({ page }) => {
-      const cartPage = new CartPage(page);
-      const registrationPage = new DomainRegistrationPage(page);
+    test(`single domain total matches search price for .${tld}`, async ({
+      cartPage,
+      domainRegistrationPage: registrationPage,
+    }) => {
       const domain = `${createDomainSld()}.${tld}`;
 
       try {

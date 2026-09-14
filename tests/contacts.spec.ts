@@ -1,6 +1,6 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../fixtures/test';
 
-import { contactSwitchLabels, type ContactData, ContactsPage } from '../pages/ContactsPage';
+import { contactSwitchLabels, type ContactData, type ContactsPage } from '../pages/ContactsPage';
 import { createContactData } from '../utils/testData';
 
 async function expectContactFormToMatch(
@@ -41,8 +41,7 @@ async function cleanupContact(contactsPage: ContactsPage, name: string): Promise
 }
 
 test.describe('Contacts', () => {
-  test('creates a new contact and persists its values', async ({ page }) => {
-    const contactsPage = new ContactsPage(page);
+  test('creates a new contact and persists its values', async ({ contactsPage }) => {
     const contact = createContactData();
 
     try {
@@ -66,8 +65,7 @@ test.describe('Contacts', () => {
     }
   });
 
-  test('edits its own disposable contact and persists changed values', async ({ page }) => {
-    const contactsPage = new ContactsPage(page);
+  test('edits its own disposable contact and persists changed values', async ({ contactsPage }) => {
     const originalContact = createContactData();
     const editedContact: ContactData = {
       ...originalContact,
@@ -101,8 +99,7 @@ test.describe('Contacts', () => {
     }
   });
 
-  test('deletes its own disposable contact', async ({ page }) => {
-    const contactsPage = new ContactsPage(page);
+  test('deletes its own disposable contact', async ({ contactsPage }) => {
     const contact = createContactData();
 
     try {

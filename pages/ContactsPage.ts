@@ -117,7 +117,10 @@ export class ContactsPage {
 
   private async selectPhonePrefix(prefix: string): Promise<void> {
     await this.phonePrefixSelect.click();
-    await this.page.getByText(`+${prefix} Ukraine`, { exact: true }).click();
+    await this.page
+      .getByRole('listitem')
+      .filter({ hasText: new RegExp(`^\\s*Ukraine\\s+\\+${prefix}\\s*$`) })
+      .click();
   }
 
   private textInputByVisibleLabel(label: string): Locator {

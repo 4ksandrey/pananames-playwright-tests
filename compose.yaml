@@ -1,0 +1,11 @@
+services:
+  tests:
+    build:
+      context: .
+    init: true
+    ipc: host
+    env_file:
+      - .env
+    volumes:
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results

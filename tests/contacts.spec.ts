@@ -26,7 +26,7 @@ async function expectContactFormToMatch(
   ] as const;
 
   for (const [label, checked] of expectedSwitches) {
-    const contactSwitch = contactsPage.switchByLabel(label);
+    const contactSwitch = contactsPage.checkboxByLabel(label);
 
     if (checked) {
       await expect(contactSwitch).toBeChecked();

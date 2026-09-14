@@ -9,7 +9,7 @@ export class CartPage {
   readonly total: Locator;
 
   constructor(private readonly page: Page) {
-    this.heading = page.getByRole('heading', { name: 'Shopping cart', exact: true });
+    this.heading = page.getByRole('heading', { name: /^(?:Shopping cart|Cart is empty)$/ });
     this.deleteAllItems = page.getByText('Delete all items', { exact: true });
     this.emptyMessage = page.getByText('Cart is empty', { exact: true });
     this.total = page.getByText(/^TOTAL:/);

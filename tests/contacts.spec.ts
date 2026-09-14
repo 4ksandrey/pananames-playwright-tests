@@ -50,15 +50,21 @@ test.describe('Contacts', () => {
     const contact = createContactData();
 
     try {
-      await contactsPage.open();
-      await contactsPage.createContact(contact);
+      await test.step('Create contact', async () => {
+        await contactsPage.open();
+        await contactsPage.createContact(contact);
+      });
 
-      const contactRow = contactsPage.contactRow(contact.name);
-      await expect(contactRow).toBeVisible();
-      await expect(contactRow).toContainText(contact.email);
+      await test.step('Verify contact in list', async () => {
+        const contactRow = contactsPage.contactRow(contact.name);
+        await expect(contactRow).toBeVisible();
+        await expect(contactRow).toContainText(contact.email);
+      });
 
-      await contactsPage.openContact(contact.name);
-      await expectContactFormToMatch(contactsPage, contact);
+      await test.step('Verify persisted contact details', async () => {
+        await contactsPage.openContact(contact.name);
+        await expectContactFormToMatch(contactsPage, contact);
+      });
     } finally {
       await cleanupContact(contactsPage, contact.name);
     }
@@ -79,14 +85,21 @@ test.describe('Contacts', () => {
     };
 
     try {
-      await contactsPage.open();
-      await contactsPage.createContact(originalContact);
-      await contactsPage.openContact(originalContact.name);
-      await contactsPage.editContact(editedContact);
+      await test.step('Create contact for editing', async () => {
+        await contactsPage.open();
+        await contactsPage.createContact(originalContact);
+      });
 
-      await expect(contactsPage.contactRow(editedContact.name)).toBeVisible();
-      await contactsPage.openContact(editedContact.name);
-      await expectContactFormToMatch(contactsPage, editedContact);
+      await test.step('Edit contact', async () => {
+        await contactsPage.openContact(originalContact.name);
+        await contactsPage.editContact(editedContact);
+      });
+
+      await test.step('Verify persisted contact changes', async () => {
+        await expect(contactsPage.contactRow(editedContact.name)).toBeVisible();
+        await contactsPage.openContact(editedContact.name);
+        await expectContactFormToMatch(contactsPage, editedContact);
+      });
     } finally {
       await cleanupContact(contactsPage, originalContact.name);
     }
@@ -97,13 +110,17 @@ test.describe('Contacts', () => {
     const contact = createContactData();
 
     try {
-      await contactsPage.open();
-      await contactsPage.createContact(contact);
+      await test.step('Create contact for deletion', async () => {
+        await contactsPage.open();
+        await contactsPage.createContact(contact);
+      });
 
-      const contactRow = contactsPage.contactRow(contact.name);
-      await expect(contactRow).toBeVisible();
-      await contactsPage.deleteContact(contact.name);
-      await expect(contactRow).toBeHidden();
+      await test.step('Delete contact and verify removal', async () => {
+        const contactRow = contactsPage.contactRow(contact.name);
+        await expect(contactRow).toBeVisible();
+        await contactsPage.deleteContact(contact.name);
+        await expect(contactRow).toBeHidden();
+      });
     } finally {
       await cleanupContact(contactsPage, contact.name);
     }

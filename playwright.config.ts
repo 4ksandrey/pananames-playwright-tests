@@ -1,8 +1,7 @@
 import 'dotenv/config';
 
 import { defineConfig, devices } from '@playwright/test';
-
-export const authStatePath = 'playwright/.auth/user.json';
+import { authStatePath } from './utils/paths';
 
 export default defineConfig({
   testDir: './tests',

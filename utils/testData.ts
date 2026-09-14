@@ -7,13 +7,18 @@ function uniqueToken(): string {
   return `${timePart}${randomPart}`;
 }
 
+function lettersOnlyToken(token: string): string {
+  return token.replace(/\d/g, (digit) => String.fromCharCode('a'.charCodeAt(0) + Number(digit)));
+}
+
 export function createContactData(): ContactData {
   const token = uniqueToken();
+  const nameToken = lettersOnlyToken(token);
 
   return {
-    name: `qa-auto-${token}`,
+    name: `QaAuto${nameToken}`,
     firstName: 'QA',
-    lastName: `Automation ${token}`,
+    lastName: `Automation${nameToken}`,
     email: `qa-auto-${token}@example.com`,
     phonePrefix: '380',
     phoneNumber: `9${Math.floor(100_000_000 + Math.random() * 900_000_000)}`,

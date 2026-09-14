@@ -36,8 +36,7 @@ test.describe('Single domain cart total', () => {
         expect(cartTotal.minorUnits).toBe(searchResult.priceInMinorUnits);
       } finally {
         await cartPage
-          .open()
-          .then(() => cartPage.clear())
+          .clearForCleanup()
           .catch((error) => console.warn('Cart cleanup failed after single-domain test.', error));
       }
     });

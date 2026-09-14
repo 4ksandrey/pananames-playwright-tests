@@ -109,10 +109,10 @@ export class ContactsPage {
     await this.selectPhonePrefix(data.phonePrefix);
     await this.phoneNumberInput.fill(data.phoneNumber);
     await this.commentInput.fill(data.comment);
-    await this.checkboxByLabel(contactSwitchLabels.support).setChecked(data.supportRequests);
-    await this.checkboxByLabel(contactSwitchLabels.promotional).setChecked(data.promotionalEmails);
-    await this.checkboxByLabel(contactSwitchLabels.product).setChecked(data.productEmails);
-    await this.checkboxByLabel(contactSwitchLabels.financial).setChecked(data.financialEmails);
+    await this.setCheckboxState(contactSwitchLabels.support, data.supportRequests);
+    await this.setCheckboxState(contactSwitchLabels.promotional, data.promotionalEmails);
+    await this.setCheckboxState(contactSwitchLabels.product, data.productEmails);
+    await this.setCheckboxState(contactSwitchLabels.financial, data.financialEmails);
   }
 
   private async selectPhonePrefix(prefix: string): Promise<void> {
@@ -128,5 +128,13 @@ export class ContactsPage {
       .locator('div.relative')
       .filter({ has: this.page.getByText(label, { exact: true }) })
       .getByRole('textbox');
+  }
+
+  private async setCheckboxState(label: string, checked: boolean): Promise<void> {
+    const checkbox = this.checkboxByLabel(label);
+
+    if ((await checkbox.isChecked()) !== checked) {
+      await this.page.locator('label.va-checkbox__label').filter({ hasText: label }).click();
+    }
   }
 }

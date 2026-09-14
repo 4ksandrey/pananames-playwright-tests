@@ -118,8 +118,8 @@ export class ContactsPage {
   private async selectPhonePrefix(prefix: string): Promise<void> {
     await this.phonePrefixSelect.click();
     await this.page
-      .getByRole('listitem')
-      .filter({ hasText: new RegExp(`^\\s*Ukraine\\s+\\+${prefix}\\s*$`) })
+      .locator('.vue-country-item[data-iso="ua"]')
+      .filter({ hasText: `+${prefix}` })
       .click();
   }
 

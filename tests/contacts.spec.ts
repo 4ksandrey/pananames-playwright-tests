@@ -41,14 +41,63 @@ test.describe('Contacts', () => {
     const contactsPage = new ContactsPage(page);
     const contact = createContactData();
 
-    await contactsPage.open();
-    await contactsPage.createContact(contact);
+    try {
+      await contactsPage.open();
+      await contactsPage.createContact(contact);
 
-    const contactRow = contactsPage.contactRow(contact.name);
-    await expect(contactRow).toBeVisible();
-    await expect(contactRow).toContainText(contact.email);
+      const contactRow = contactsPage.contactRow(contact.name);
+      await expect(contactRow).toBeVisible();
+      await expect(contactRow).toContainText(contact.email);
 
-    await contactsPage.openContact(contact.name);
-    await expectContactFormToMatch(contactsPage, contact);
+      await contactsPage.openContact(contact.name);
+      await expectContactFormToMatch(contactsPage, contact);
+    } finally {
+      await contactsPage.deleteContactIfPresent(contact.name).catch(() => undefined);
+    }
+  });
+
+  test('edits its own disposable contact and persists changed values', async ({ page }) => {
+    const contactsPage = new ContactsPage(page);
+    const originalContact = createContactData();
+    const editedContact: ContactData = {
+      ...originalContact,
+      firstName: 'UpdatedQA',
+      lastName: 'UpdatedAutomation',
+      comment: 'Updated by an isolated Playwright scenario',
+      supportRequests: false,
+      promotionalEmails: true,
+      productEmails: false,
+      financialEmails: true,
+    };
+
+    try {
+      await contactsPage.open();
+      await contactsPage.createContact(originalContact);
+      await contactsPage.openContact(originalContact.name);
+      await contactsPage.editContact(editedContact);
+
+      await expect(contactsPage.contactRow(editedContact.name)).toBeVisible();
+      await contactsPage.openContact(editedContact.name);
+      await expectContactFormToMatch(contactsPage, editedContact);
+    } finally {
+      await contactsPage.deleteContactIfPresent(originalContact.name).catch(() => undefined);
+    }
+  });
+
+  test('deletes its own disposable contact', async ({ page }) => {
+    const contactsPage = new ContactsPage(page);
+    const contact = createContactData();
+
+    try {
+      await contactsPage.open();
+      await contactsPage.createContact(contact);
+
+      const contactRow = contactsPage.contactRow(contact.name);
+      await expect(contactRow).toBeVisible();
+      await contactsPage.deleteContact(contact.name);
+      await expect(contactRow).toBeHidden();
+    } finally {
+      await contactsPage.deleteContactIfPresent(contact.name).catch(() => undefined);
+    }
   });
 });

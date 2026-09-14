@@ -36,13 +36,13 @@ export class ContactsPage {
   constructor(private readonly page: Page) {
     this.heading = page.getByRole('heading', { name: 'Contacts', exact: true });
     this.addContactButton = page.getByRole('button', { name: 'Add New Contact' });
-    this.nameInput = page.getByLabel('Contact type/NAME', { exact: true });
-    this.firstNameInput = page.getByLabel('First Name', { exact: true });
-    this.lastNameInput = page.getByLabel('Last Name', { exact: true });
-    this.emailInput = page.getByLabel('Email', { exact: true });
-    this.phonePrefixSelect = page.getByLabel('Phone prefix*', { exact: true });
-    this.phoneNumberInput = page.getByLabel('Phone number', { exact: true });
-    this.commentInput = page.getByLabel('Comment (optional)', { exact: true });
+    this.nameInput = this.textInputByVisibleLabel('Contact type/NAME');
+    this.firstNameInput = this.textInputByVisibleLabel('First Name');
+    this.lastNameInput = this.textInputByVisibleLabel('Last Name');
+    this.emailInput = this.textInputByVisibleLabel('Email');
+    this.phonePrefixSelect = this.textInputByVisibleLabel('Phone prefix*');
+    this.phoneNumberInput = this.textInputByVisibleLabel('Phone number');
+    this.commentInput = this.textInputByVisibleLabel('Comment (optional)');
   }
 
   async open(): Promise<void> {
@@ -54,8 +54,8 @@ export class ContactsPage {
     return this.page.getByRole('row').filter({ has: this.page.getByText(name, { exact: true }) });
   }
 
-  switchByLabel(label: string): Locator {
-    return this.page.getByRole('switch', { name: label, exact: true });
+  checkboxByLabel(label: string): Locator {
+    return this.page.getByRole('checkbox', { name: label, exact: true });
   }
 
   async createContact(data: ContactData): Promise<void> {
@@ -109,14 +109,21 @@ export class ContactsPage {
     await this.selectPhonePrefix(data.phonePrefix);
     await this.phoneNumberInput.fill(data.phoneNumber);
     await this.commentInput.fill(data.comment);
-    await this.switchByLabel(contactSwitchLabels.support).setChecked(data.supportRequests);
-    await this.switchByLabel(contactSwitchLabels.promotional).setChecked(data.promotionalEmails);
-    await this.switchByLabel(contactSwitchLabels.product).setChecked(data.productEmails);
-    await this.switchByLabel(contactSwitchLabels.financial).setChecked(data.financialEmails);
+    await this.checkboxByLabel(contactSwitchLabels.support).setChecked(data.supportRequests);
+    await this.checkboxByLabel(contactSwitchLabels.promotional).setChecked(data.promotionalEmails);
+    await this.checkboxByLabel(contactSwitchLabels.product).setChecked(data.productEmails);
+    await this.checkboxByLabel(contactSwitchLabels.financial).setChecked(data.financialEmails);
   }
 
   private async selectPhonePrefix(prefix: string): Promise<void> {
     await this.phonePrefixSelect.click();
     await this.page.getByText(`+${prefix} Ukraine`, { exact: true }).click();
+  }
+
+  private textInputByVisibleLabel(label: string): Locator {
+    return this.page
+      .locator('div.relative')
+      .filter({ has: this.page.getByText(label, { exact: true }) })
+      .getByRole('textbox');
   }
 }

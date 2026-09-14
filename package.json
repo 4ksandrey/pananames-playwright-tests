@@ -3,17 +3,28 @@
   "version": "1.0.0",
   "private": true,
   "description": "Playwright end-to-end tests for Pananames contacts and domain cart workflows",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "test": "playwright test",
     "test:contacts": "playwright test tests/contacts.spec.ts",
     "test:domains": "playwright test tests/single-domain.spec.ts tests/multiple-domains.spec.ts",
     "test:headed": "playwright test --headed",
-    "typecheck": "tsc --noEmit"
+    "test:debug": "playwright test --debug",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "format": "prettier --write ."
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.55.0",
     "@types/node": "^24.3.0",
     "dotenv": "^17.2.1",
-    "typescript": "^5.9.2"
+    "eslint": "^10.10.0",
+    "prettier": "^3.9.6",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.70.0"
   }
 }

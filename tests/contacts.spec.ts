@@ -1,10 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import {
-  contactSwitchLabels,
-  type ContactData,
-  ContactsPage,
-} from '../pages/ContactsPage';
+import { contactSwitchLabels, type ContactData, ContactsPage } from '../pages/ContactsPage';
 import { createContactData } from '../utils/testData';
 
 async function expectContactFormToMatch(

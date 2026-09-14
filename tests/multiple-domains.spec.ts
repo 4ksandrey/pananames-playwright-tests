@@ -4,7 +4,9 @@ import { CartPage } from '../pages/CartPage';
 import { DomainRegistrationPage } from '../pages/DomainRegistrationPage';
 import { createDomainSld } from '../utils/testData';
 
-test('multiple domain total matches the sum of exactly three available results', async ({ page }) => {
+test('multiple domain total matches the sum of exactly three available results', async ({
+  page,
+}) => {
   const cartPage = new CartPage(page);
   const registrationPage = new DomainRegistrationPage(page);
   const sld = createDomainSld();

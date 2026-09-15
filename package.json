@@ -12,10 +12,14 @@
     "test:domains": "playwright test tests/single-domain.spec.ts tests/multiple-domains.spec.ts",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "test:list": "playwright test --list",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format:check": "prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "validate": "npm run typecheck && npm run lint && npm run format:check && npm run test:list"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -23,6 +27,7 @@
     "@types/node": "^24.3.0",
     "dotenv": "^17.2.1",
     "eslint": "^10.10.0",
+    "eslint-plugin-playwright": "^2.12.0",
     "prettier": "^3.9.6",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.70.0"

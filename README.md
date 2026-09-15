@@ -1,15 +1,22 @@
 # Pananames Playwright Tests
 
+[![Quality](https://github.com/4ksandrey/pananames-playwright-tests/actions/workflows/quality.yml/badge.svg)](https://github.com/4ksandrey/pananames-playwright-tests/actions/workflows/quality.yml)
+
 A focused Playwright and TypeScript test project for Pananames contact management and domain-cart workflows.
 
 ## Automated coverage
 
-- Create a contact and verify its persisted values.
-- Edit a disposable contact and verify changed fields.
-- Verify contact checkbox persistence.
-- Delete a disposable contact through the UI.
-- Verify a single-domain cart total for `.com`, `.net`, and `.org` using parameterized tests.
-- Search by SLD, add exactly three available domains, and verify the cart total equals their summed prices.
+| Assignment requirement             | Automated test                             |
+| ---------------------------------- | ------------------------------------------ |
+| Create contact and persist values  | `contacts.spec.ts`                         |
+| Edit an owned disposable contact   | `contacts.spec.ts`                         |
+| Persist contact checkbox states    | `contacts.spec.ts`                         |
+| Delete an owned disposable contact | `contacts.spec.ts`                         |
+| Add one available `.com` domain    | Parameterized `single-domain.spec.ts` test |
+| Add one available `.net` domain    | Parameterized `single-domain.spec.ts` test |
+| Add one available `.org` domain    | Parameterized `single-domain.spec.ts` test |
+| Add three available domains by SLD | `multiple-domains.spec.ts`                 |
+| Verify exact cart items and total  | Both domain spec files                     |
 
 Each contact test creates its own unique data and performs best-effort cleanup. Domain tests clear the shared cart before and after each scenario. The protected `primary` and `abuse` contacts are never used as disposable test data.
 
@@ -42,11 +49,12 @@ Copy-Item .env.example .env
 Set the credentials supplied for the test account in `.env`:
 
 ```dotenv
+BASE_URL=https://mcp.pananames-dev.com
 PANANAMES_EMAIL=
 PANANAMES_PASSWORD=
 ```
 
-Playwright loads `.env` through `dotenv`. The file and generated authentication state are ignored by Git.
+`BASE_URL` is optional at runtime and defaults to the supplied Pananames dev URL. Override it to target another compatible environment. Credentials remain mandatory. Playwright loads `.env` through `dotenv`; the file and generated authentication state are ignored by Git.
 
 ## Running tests
 
@@ -66,7 +74,19 @@ npm run test:headed
 # Open Playwright Inspector for debugging
 npm run test:debug
 
-# Static validation
+# Explore and run tests in Playwright UI mode
+npm run test:ui
+
+# Open the generated HTML report
+npm run test:report
+
+# Validate configuration and discover tests without credentials
+npm run test:list
+
+# Run every credential-free quality check
+npm run validate
+
+# Run individual static checks
 npm run typecheck
 npm run lint
 npm run format:check
@@ -109,6 +129,7 @@ tests/single-domain.spec.ts
 tests/multiple-domains.spec.ts
 utils/money.ts            USD display parsing into integer cents
 utils/testData.ts         Unique disposable contact and DNS-safe domain data
+types/contact.ts          Contact data shared by tests, helpers, and the page object
 playwright.config.ts      Authentication dependency and Chromium configuration
 Dockerfile                Reproducible Playwright execution image
 compose.yaml              Credentials and artifact mounts for Docker execution
@@ -117,9 +138,11 @@ compose.yaml              Credentials and artifact mounts for Docker execution
 
 ## Continuous integration
 
-`quality.yml` runs `npm ci`, TypeScript, ESLint, and Prettier checks for pull requests and pushes to `main`. It does not access the dev application.
+`quality.yml` runs `npm ci`, TypeScript, ESLint (including type-aware and Playwright-specific rules), Prettier, and Playwright test discovery for pull requests and pushes to `main`. It does not access the dev application or require credentials.
 
-`e2e-manual.yml` runs the Playwright suite only when started manually through **Actions → Manual E2E → Run workflow**. Before using it, configure the repository secrets `PANANAMES_EMAIL` and `PANANAMES_PASSWORD`.
+`e2e-manual.yml` runs the Playwright suite only when started manually through **Actions → Manual E2E → Run workflow**. Before using it, configure the repository secrets `PANANAMES_EMAIL` and `PANANAMES_PASSWORD`. Runs share a concurrency group and queue instead of cancelling or overlapping because the account-scoped cart is mutable shared state.
+
+The manual workflow publishes `playwright-report/` and `test-results/` for 14 days even when tests fail. Download the artifact from the workflow run to inspect the HTML report, traces, screenshots, video, and attached non-sensitive test data.
 
 ## Design decisions
 
@@ -127,10 +150,11 @@ compose.yaml              Credentials and artifact mounts for Docker execution
 - Typed Playwright fixtures initialize only the page objects each scenario needs.
 - A setup project logs in once through the UI and saves reusable `storageState`.
 - Contact scenarios own their setup and cleanup, so they can run independently and in any order.
+- Domain scenarios try a small bounded set of unique candidates, so unsuitable availability data does not trigger a full-test retry or an unbounded loop.
 - Displayed prices are converted to integer cents; promotional and multi-year displays use the effective selected-period amount.
 - Single-domain coverage is data-driven across three supported TLDs rather than duplicated.
 - Execution uses one worker because the supplied account is shared and cart state may be account-scoped. Tests remain logically independent despite sequential execution.
 - Docker provides a reproducible Node.js, Chromium, and system-library environment without replacing the local workflow.
-- CI runs static checks automatically; E2E execution against the shared dev environment remains manually triggered.
+- CI runs static checks automatically; credential-dependent E2E execution against the shared dev environment remains manually triggered and serialized.
 - Chromium is the only configured browser because cross-browser coverage was not requested.
-- Screenshots and videos are retained on failure, while traces are captured on the first retry.
+- Native Playwright list and HTML reporters, business-level steps, small diagnostic attachments, failure screenshots/video, and first-retry traces provide useful evidence without a third-party reporting stack.

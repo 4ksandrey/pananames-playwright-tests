@@ -1,4 +1,4 @@
-import type { ContactData } from '../pages/ContactsPage';
+import type { ContactData } from '../types/contact';
 
 function uniqueToken(): string {
   const timePart = Date.now().toString(36);

@@ -32,3 +32,6 @@ jobs:
 
       - name: Check formatting
         run: npm run format:check
+
+      - name: Validate Playwright test discovery
+        run: npm run test:list

@@ -3,6 +3,8 @@ import 'dotenv/config';
 import { defineConfig, devices } from '@playwright/test';
 import { authStatePath } from './utils/paths';
 
+const baseURL = process.env.BASE_URL ?? 'https://mcp.pananames-dev.com';
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: false,
@@ -11,10 +13,13 @@ export default defineConfig({
   expect: {
     timeout: 10_000,
   },
-  retries: process.env.CI ? 2 : 0,
-  reporter: [['html', { open: 'never' }]],
+  forbidOnly: !!process.env.CI,
+  failOnFlakyTests: !!process.env.CI,
+  retries: process.env.CI ? 1 : 0,
+  reporter: [['list'], ['html', { open: 'never' }]],
+  outputDir: 'test-results',
   use: {
-    baseURL: 'https://mcp.pananames-dev.com',
+    baseURL,
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
     video: 'retain-on-failure',

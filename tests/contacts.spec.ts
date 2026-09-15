@@ -1,6 +1,7 @@
 import { expect, test } from '../fixtures/test';
 
-import { contactSwitchLabels, type ContactData, type ContactsPage } from '../pages/ContactsPage';
+import { contactSwitchLabels, type ContactsPage } from '../pages/ContactsPage';
+import type { ContactData } from '../types/contact';
 import { createContactData } from '../utils/testData';
 
 async function expectContactFormToMatch(
@@ -108,11 +109,16 @@ test.describe('Contacts', () => {
         await contactsPage.createContact(contact);
       });
 
-      await test.step('Delete contact and verify removal', async () => {
+      await test.step('Delete contact', async () => {
         const contactRow = contactsPage.contactRow(contact.name);
         await expect(contactRow).toBeVisible();
         await contactsPage.deleteContact(contact.name);
         await expect(contactRow).toBeHidden();
+      });
+
+      await test.step('Verify deletion persists after reopening contacts', async () => {
+        await contactsPage.open();
+        await expect(contactsPage.contactRow(contact.name)).toBeHidden();
       });
     } finally {
       await cleanupContact(contactsPage, contact.name);

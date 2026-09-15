@@ -1,5 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
+import type { ContactData } from '../types/contact';
+
 export const contactSwitchLabels = {
   support:
     'Allow Support Requests (we will process any request for modification of domain names on this Company account made by this contact)',
@@ -7,20 +9,6 @@ export const contactSwitchLabels = {
   product: 'Send product emails (domain registrations, renewals, failures, etc.)',
   financial: 'Send financial emails (balance notifications)',
 } as const;
-
-export type ContactData = {
-  name: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phonePrefix: string;
-  phoneNumber: string;
-  comment: string;
-  supportRequests: boolean;
-  promotionalEmails: boolean;
-  productEmails: boolean;
-  financialEmails: boolean;
-};
 
 export class ContactsPage {
   readonly heading: Locator;

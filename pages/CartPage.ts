@@ -6,12 +6,19 @@ export class CartPage {
   readonly heading: Locator;
   readonly deleteAllItems: Locator;
   readonly emptyMessage: Locator;
+  readonly registrationItemRows: Locator;
   readonly total: Locator;
 
   constructor(private readonly page: Page) {
     this.heading = page.getByRole('heading', { name: /^(?:Shopping cart|Cart is empty)$/ });
     this.deleteAllItems = page.getByText('Delete all items', { exact: true });
     this.emptyMessage = page.getByText('Cart is empty', { exact: true });
+    this.registrationItemRows = page
+      .getByRole('table')
+      .getByRole('row')
+      .filter({
+        has: page.getByText(/^\s*Register\s+\S+/),
+      });
     this.total = page.getByText(/^TOTAL:/);
   }
 
@@ -31,7 +38,7 @@ export class CartPage {
   }
 
   async clear(timeout?: number): Promise<void> {
-    const itemRows = this.cartItemRows();
+    const itemRows = this.registrationItemRows;
 
     await this.emptyMessage.or(itemRows.first()).first().waitFor({ timeout });
 
@@ -70,14 +77,5 @@ export class CartPage {
     }
 
     await this.clear(cleanupTimeout);
-  }
-
-  private cartItemRows(): Locator {
-    return this.page
-      .getByRole('table')
-      .getByRole('row')
-      .filter({
-        has: this.page.getByText(/^\s*Register\s+\S+/),
-      });
   }
 }

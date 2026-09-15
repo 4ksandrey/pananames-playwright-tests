@@ -2,6 +2,15 @@ import type { Locator, Page } from '@playwright/test';
 
 import { parseMoney } from '../utils/money';
 
+function whitespaceTolerantPattern(value: string, exact: boolean): RegExp {
+  const escapedCharacters = [...value].map((character) =>
+    character.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+  );
+  const valuePattern = escapedCharacters.join('\\s*');
+
+  return new RegExp(exact ? `^\\s*${valuePattern}\\s*$` : valuePattern, 'i');
+}
+
 export type DomainResult = {
   domain: string;
   currency: 'USD';
@@ -12,7 +21,6 @@ export class DomainRegistrationPage {
   readonly heading: Locator;
   readonly searchInput: Locator;
   readonly resultCards: Locator;
-  readonly availableResultCards: Locator;
 
   constructor(private readonly page: Page) {
     this.heading = page.getByRole('heading', {
@@ -20,9 +28,6 @@ export class DomainRegistrationPage {
     });
     this.searchInput = page.getByPlaceholder('Enter domain name or keyword');
     this.resultCards = page.locator('.list__item');
-    this.availableResultCards = this.resultCards.filter({
-      has: page.getByRole('button', { name: 'Add to cart', exact: true }),
-    });
   }
 
   async open(): Promise<void> {
@@ -33,16 +38,36 @@ export class DomainRegistrationPage {
   async searchDomain(query: string): Promise<void> {
     await this.searchInput.fill(query);
     await this.searchInput.press('Enter');
-    await this.resultCards.first().waitFor();
+    await this.resultCardsMatching(query).first().waitFor();
   }
 
-  resultCard(domain: string): Locator {
+  private resultCard(domain: string): Locator {
     return this.resultCards.filter({
-      has: this.page.getByText(domain, { exact: true }),
+      has: this.page.locator('.domain-name').filter({
+        hasText: whitespaceTolerantPattern(domain, true),
+      }),
     });
   }
 
-  async readDomainResult(card: Locator): Promise<DomainResult> {
+  async isDomainAvailable(domain: string): Promise<boolean> {
+    return this.resultCard(domain).getByRole('button', { name: 'Add to cart' }).isVisible();
+  }
+
+  async readAvailableDomainResults(query: string): Promise<DomainResult[]> {
+    const cards = await this.resultCardsMatching(query)
+      .filter({
+        has: this.page.getByRole('button', { name: 'Add to cart', exact: true }),
+      })
+      .all();
+
+    return Promise.all(cards.map((card) => this.readDomainResult(card)));
+  }
+
+  async readDomain(domain: string): Promise<DomainResult> {
+    return this.readDomainResult(this.resultCard(domain));
+  }
+
+  private async readDomainResult(card: Locator): Promise<DomainResult> {
     const domain = (await card.locator('.domain-name').innerText())
       .replaceAll(/\s/g, '')
       .toLowerCase();
@@ -93,5 +118,13 @@ export class DomainRegistrationPage {
   async openCart(): Promise<void> {
     await this.page.getByRole('button', { name: 'Proceed to Cart' }).click();
     await this.page.waitForURL(/\/cart(?:[?#].*)?$/);
+  }
+
+  private resultCardsMatching(query: string): Locator {
+    return this.resultCards.filter({
+      has: this.page.locator('.domain-name').filter({
+        hasText: whitespaceTolerantPattern(query, false),
+      }),
+    });
   }
 }
